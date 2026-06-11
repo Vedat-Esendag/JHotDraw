@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - develop
+      -vedat/portfolio
 
 jobs:
   build:
@@ -24,3 +25,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B -s .maven-settings.xml clean install
+
+
