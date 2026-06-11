@@ -51,7 +51,8 @@
 		  JGiven (BDD) runs as plain JUnit 4 tests via its ScenarioTest base
 		  class, so it is picked up by the surefire-junit47 provider configured
 		  below (the same one that runs InvertSelectionActionTest). jgiven-junit
-		  1.x and assertj-core 3.24.x are the last lines that stay Java-8
+		  1.2.5 (jgiven-core 1.3.x ships Java-11 bytecode, which breaks the Java-8
+		  build; 1.2.5 is Java-8) and assertj-core 3.24.x keep this module Java-8
 		  compatible. AssertJ is used for the domain assertions; AssertJ-Swing is
 		  deliberately NOT used: these scenarios assert on the action's domain
 		  behaviour (the captured selection), not by driving a live Swing GUI.
@@ -59,7 +60,7 @@
 		<dependency>
 			<groupId>com.tngtech.jgiven</groupId>
 			<artifactId>jgiven-junit</artifactId>
-			<version>1.3.1</version>
+			<version>1.2.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
