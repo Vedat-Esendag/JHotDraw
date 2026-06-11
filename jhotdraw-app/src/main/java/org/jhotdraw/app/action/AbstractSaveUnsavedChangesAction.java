@@ -8,7 +8,7 @@
 package org.jhotdraw.app.action;
 
 import java.awt.Component;
-import java.awt.Window;
+//import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+//import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import org.jhotdraw.action.AbstractViewAction;
@@ -25,7 +25,7 @@ import org.jhotdraw.api.app.View;
 import org.jhotdraw.api.gui.URIChooser;
 import org.jhotdraw.gui.JSheet;
 import org.jhotdraw.gui.event.SheetEvent;
-import org.jhotdraw.gui.event.SheetListener;
+//import org.jhotdraw.gui.event.SheetListener;
 import org.jhotdraw.net.URIUtil;
 import org.jhotdraw.util.ResourceBundleUtil;
 
@@ -53,68 +53,76 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
     /**
      * Creates a new instance.
      */
-    public AbstractSaveUnsavedChangesAction(Application app, View view) {
+    protected AbstractSaveUnsavedChangesAction(Application app, View view) {
         super(app, view);
     }
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        Application app = getApplication();
-        View av = getActiveView();
-        if (av == null) {
-            if (isMayCreateView()) {
-                av = app.createView();
-                app.add(av);
-                app.show(av);
-            } else {
-                return;
-            }
+        final View view = getActiveView();
+
+        // 1. Guard clause to exit early
+        if (view == null) {
+            return;
         }
-        final View v = av;
-        if (v.isEnabled()) {
-            final ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
-            Window wAncestor = SwingUtilities.getWindowAncestor(v.getComponent());
-            oldFocusOwner = (wAncestor == null) ? null : wAncestor.getFocusOwner();
-            v.setEnabled(false);
-            if (v.hasUnsavedChanges()) {
-                URI unsavedURI = v.getURI();
-                JOptionPane pane = new JOptionPane(
-                        "<html>" + UIManager.getString("OptionPane.css")
-                        + "<b>" + labels.getFormatted("file.saveBefore.doYouWantToSave.message",
-                                                      (unsavedURI == null) ? labels.getString("unnamedFile") : URIUtil.
-                                                              getName(unsavedURI)) + "</b><p>"
-                        + labels.getString("file.saveBefore.doYouWantToSave.details"),
-                        JOptionPane.WARNING_MESSAGE);
-                Object[] options = {
-                    labels.getString("file.saveBefore.saveOption.text"),
-                    labels.getString("file.saveBefore.cancelOption.text"),
-                    labels.getString("file.saveBefore.dontSaveOption.text")
-                };
-                pane.setOptions(options);
-                pane.setInitialValue(options[0]);
-                pane.putClientProperty("Quaqua.OptionPane.destructiveOption", 2);
-                JSheet.showSheet(pane, v.getComponent(), new SheetListener() {
-                             @Override
-                             public void optionSelected(SheetEvent evt) {
-                                 Object value = evt.getValue();
-                                 if (value == null || value.
-                                         equals(labels.getString("file.saveBefore.cancelOption.text"))) {
-                                     v.setEnabled(true);
-                                 } else if (value.equals(labels.getString("file.saveBefore.dontSaveOption.text"))) {
-                                     doIt(v);
-                                     v.setEnabled(true);
-                                 } else if (value.equals(labels.getString("file.saveBefore.saveOption.text"))) {
-                                     saveView(v);
-                                 }
-                             }
-                         });
-            } else {
-                doIt(v);
-                v.setEnabled(true);
-                if (oldFocusOwner != null) {
-                    oldFocusOwner.requestFocus();
-                }
-            }
+
+        // 2. High-level execution flow
+        if (view.hasUnsavedChanges()) {
+            showUnsavedChangesDialog(view);
+        } else {
+            doIt(view);
+        }
+    }
+
+    /**
+     * EXTRACTED METHOD: Handles the initialization of the dialog sheet.
+     */
+    private void showUnsavedChangesDialog(final View view) {
+        final ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
+        JOptionPane pane = createSaveOptionPane(view, labels);
+
+        JSheet.showSheet(pane, view.getComponent(), evt -> handleSaveOptionSelected(evt, view, labels));
+    }
+
+    /**
+     * EXTRACTED METHOD: Handles the UI construction of the JOptionPane.
+     */
+    private JOptionPane createSaveOptionPane(View view, ResourceBundleUtil labels) {
+        URI unsavedURI = view.getURI();
+        String title = (unsavedURI == null) ? labels.getString("unnamedFile") : URIUtil.getName(unsavedURI);
+
+        JOptionPane pane = new JOptionPane(
+                "<html>" + UIManager.getString("OptionPane.css") +
+                        "<b>" + labels.getFormatted("file.saveBefore.doYouWantToSave.message", title) + "</b><p>" +
+                        labels.getString("file.saveBefore.doYouWantToSave.details"),
+                JOptionPane.WARNING_MESSAGE);
+
+        Object[] options = {
+                labels.getString("file.saveBefore.saveOption.text"),
+                labels.getString("file.saveBefore.cancelOption.text"),
+                labels.getString("file.saveBefore.dontSaveOption.text")
+        };
+
+        pane.setOptions(options);
+        pane.setInitialValue(options[0]);
+        pane.putClientProperty("Quaqua.OptionPane.destructiveOption", 2);
+
+        return pane;
+    }
+
+    /**
+     * EXTRACTED METHOD: Flattens the nested conditional logic for user selection.
+     */
+    private void handleSaveOptionSelected(SheetEvent evt, View view, ResourceBundleUtil labels) {
+        Object value = evt.getValue();
+
+        if (value == null || value.equals(labels.getString("file.saveBefore.cancelOption.text"))) {
+            view.setEnabled(true);
+        } else if (value.equals(labels.getString("file.saveBefore.dontSaveOption.text"))) {
+            doIt(view);
+            view.setEnabled(true);
+        } else if (value.equals(labels.getString("file.saveBefore.saveOption.text"))) {
+            saveView(view);
         }
     }
 
@@ -131,28 +139,25 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
         if (v.getURI() == null) {
             URIChooser chooser = getChooser(v);
             //int option = fileChooser.showSaveDialog(this);
-            JSheet.showSaveSheet(chooser, v.getComponent(), new SheetListener() {
-                             @Override
-                             public void optionSelected(final SheetEvent evt) {
-                                 if (evt.getOption() == JFileChooser.APPROVE_OPTION) {
-                                     saveViewToURI(v, evt.getChooser().getSelectedURI(), evt.getChooser());
-                                 } else {
-                                     v.setEnabled(true);
-                                     if (oldFocusOwner != null) {
-                                         oldFocusOwner.requestFocus();
-                                     }
-                                 }
-                             }
-                         });
+            JSheet.showSaveSheet(chooser, v.getComponent(), evt -> {
+                if (evt.getOption() == JFileChooser.APPROVE_OPTION) {
+                    saveViewToURI(v, evt.getChooser().getSelectedURI(), evt.getChooser());
+                } else {
+                    v.setEnabled(true);
+                    if (oldFocusOwner != null) {
+                        oldFocusOwner.requestFocus();
+                    }
+                }
+            });
         } else {
             saveViewToURI(v, v.getURI(), null);
         }
     }
 
     protected void saveViewToURI(final View v, final URI uri, final URIChooser chooser) {
-        new SwingWorker() {
+        new SwingWorker<Void, Void>() {
             @Override
-            protected Object doInBackground() throws Exception {
+            protected Void doInBackground() throws Exception {
                 v.write(uri, chooser);
                 return null;
             }
@@ -174,6 +179,7 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
                                                                           getName(uri)) + "</b><p>"
                                             + ((message == null) ? "" : message),
                                             JOptionPane.ERROR_MESSAGE);
+                    Thread.currentThread().interrupt();
                 }
                 v.setEnabled(true);
                 if (oldFocusOwner != null) {
