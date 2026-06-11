@@ -250,7 +250,7 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
      * unchanged if it already ends with {@code .png} (case-insensitive)
      * @throws NullPointerException if {@code rawUri} is null
      */
-    static URI ensurePngExtension(final URI rawUri) {
+    public static URI ensurePngExtension(final URI rawUri) {
         // Invariant: this method must never be handed a null URI.
         assert rawUri != null : "rawUri must not be null";
         if (rawUri.getPath() == null) {
