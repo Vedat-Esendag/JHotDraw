@@ -7,8 +7,6 @@
  */
 package org.jhotdraw.action.edit;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.jhotdraw.api.gui.EditableComponent;
@@ -71,29 +69,20 @@ public class ClearSelectionAction extends AbstractSelectionAction {
     }
 
     @Override
-    public void actionPerformed(ActionEvent evt) {
-        JComponent c = target;
-        if (c == null && (KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                getPermanentFocusOwner() instanceof JComponent)) {
-            c = (JComponent) KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                    getPermanentFocusOwner();
-        }
-        if (c != null && c.isEnabled()) {
-            if (c instanceof EditableComponent) {
-                ((EditableComponent) c).clearSelection();
-            } else if (c instanceof JTextComponent) {
-                JTextComponent tc = ((JTextComponent) c);
-                tc.select(tc.getSelectionStart(), tc.getSelectionStart());
-            } else {
-                c.getToolkit().beep();
-            }
-        }
+    protected void performOnEditableComponent(EditableComponent c) {
+        c.clearSelection();
     }
 
     @Override
-    protected void updateEnabled() {
-        if (target != null) {
-            setEnabled(target.isEnabled());
-        }
+    protected void performOnTextComponent(JTextComponent c) {
+        // Collapse the selection to its start instead of selecting nothing,
+        // so that the caret keeps its position.
+        c.select(c.getSelectionStart(), c.getSelectionStart());
+    }
+
+    @Override
+    protected boolean isSelectionRequired() {
+        // Clear Selection stays enabled regardless of the current selection.
+        return false;
     }
 }
