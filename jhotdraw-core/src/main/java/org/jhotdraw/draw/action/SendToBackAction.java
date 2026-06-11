@@ -66,7 +66,9 @@ public class SendToBackAction extends AbstractSelectedAction {
 
     public static void sendToBack(DrawingView view, Collection<Figure> figures) {
         Drawing drawing = view.getDrawing();
-        for (Figure figure : figures) { // XXX Shouldn't the figures be sorted here back to front?
+        List<Figure> sortedFigures = drawing.sort(figures);
+        Collections.reverse(sortedFigures);
+        for (Figure figure : sortedFigures) {
             drawing.sendToBack(figure);
         }
     }
