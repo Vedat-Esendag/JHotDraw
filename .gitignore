@@ -6,3 +6,5 @@ nb-configuration.xml
 *.ftf
 /jhotdraw-samples/jhotdraw-samples-misc/nbproject/
 *.iml
+.DS_Store
+docs
