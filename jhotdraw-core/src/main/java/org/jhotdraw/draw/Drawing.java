@@ -102,7 +102,7 @@ public interface Drawing extends CompositeFigure, Serializable, DOMStorable {
      * {@link AttributeKeys} defines a number of attribute keys which can be
      * used to determine what to draw on the canvas.
      */
-    public void drawCanvas(Graphics2D g);
+    void drawCanvas(Graphics2D g);
 
     /**
      * Adds a figure to the drawing.
@@ -317,7 +317,7 @@ public interface Drawing extends CompositeFigure, Serializable, DOMStorable {
     List<Figure> sort(Collection<? extends Figure> figures);
 
     /**
-     * Adds a listener for undooable edit events.
+     * Adds a listener for undoable edit events.
      */
     void addUndoableEditListener(UndoableEditListener l);
 
@@ -333,12 +333,12 @@ public interface Drawing extends CompositeFigure, Serializable, DOMStorable {
     void fireUndoableEditHappened(UndoableEdit edit);
 
     /**
-     * Returns the font render context used to do text leyout and text drawing.
+     * Returns the font render context used to do text layout and text drawing.
      */
     FontRenderContext getFontRenderContext();
 
     /**
-     * Sets the font render context used to do text leyout and text drawing.
+     * Sets the font render context used to do text layout and text drawing.
      */
     void setFontRenderContext(FontRenderContext frc);
 
