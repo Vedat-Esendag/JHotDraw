@@ -97,15 +97,20 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
                         labels.getString("file.saveBefore.doYouWantToSave.details"),
                 JOptionPane.WARNING_MESSAGE);
 
-        Object[] options = {
-                labels.getString("file.saveBefore.saveOption.text"),
-                labels.getString("file.saveBefore.cancelOption.text"),
-                labels.getString("file.saveBefore.dontSaveOption.text")
-        };
+        java.util.List<Object> optionList = new java.util.ArrayList<>();
+        optionList.add(labels.getString("file.saveBefore.saveOption.text"));
+        // Only offer "Save as PNG" if the view is able to export a PNG image.
+        if (view.canExportToPNG()) {
+            optionList.add(labels.getString("file.saveBefore.savePngOption.text"));
+        }
+        optionList.add(labels.getString("file.saveBefore.cancelOption.text"));
+        optionList.add(labels.getString("file.saveBefore.dontSaveOption.text"));
+        Object[] options = optionList.toArray();
 
         pane.setOptions(options);
         pane.setInitialValue(options[0]);
-        pane.putClientProperty("Quaqua.OptionPane.destructiveOption", 2);
+        // The destructive ("Don't Save") option is always the last one.
+        pane.putClientProperty("Quaqua.OptionPane.destructiveOption", options.length - 1);
 
         return pane;
     }
@@ -121,6 +126,8 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
         } else if (value.equals(labels.getString("file.saveBefore.dontSaveOption.text"))) {
             doIt(view);
             view.setEnabled(true);
+        } else if (value.equals(labels.getString("file.saveBefore.savePngOption.text"))) {
+            savePNGView(view);
         } else if (value.equals(labels.getString("file.saveBefore.saveOption.text"))) {
             saveView(view);
         }
@@ -168,6 +175,107 @@ public abstract class AbstractSaveUnsavedChangesAction extends AbstractViewActio
                     get();
                     v.setURI(uri);
                     v.markChangesAsSaved();
+                    doIt(v);
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(AbstractSaveUnsavedChangesAction.class.getName()).log(Level.SEVERE, null, ex);
+                    String message = (ex.getMessage() != null) ? ex.getMessage() : ex.toString();
+                    ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
+                    JSheet.showMessageSheet(getActiveView().getComponent(),
+                                            "<html>" + UIManager.getString("OptionPane.css")
+                                            + "<b>" + labels.getFormatted("file.save.couldntSave.message", URIUtil.
+                                                                          getName(uri)) + "</b><p>"
+                                            + ((message == null) ? "" : message),
+                                            JOptionPane.ERROR_MESSAGE);
+                    Thread.currentThread().interrupt();
+                }
+                v.setEnabled(true);
+                if (oldFocusOwner != null) {
+                    oldFocusOwner.requestFocus();
+                }
+            }
+        }.execute();
+    }
+
+    /**
+     * Asks the user for a location and exports the view as a PNG image, then
+     * proceeds with the destructive action (e.g. closing the view).
+     * <p>
+     * Because a PNG is a raster export and not the view's native document
+     * format, this does not mark the document's changes as saved or change the
+     * view's URI; it simply writes the image and continues.
+     */
+    protected void savePNGView(final View v) {
+        URIChooser chooser = getPNGChooser(v);
+        JSheet.showSaveSheet(chooser, v.getComponent(), evt -> {
+            if (evt.getOption() == JFileChooser.APPROVE_OPTION) {
+                exportViewToPNG(v, evt.getChooser().getSelectedURI());
+            } else {
+                v.setEnabled(true);
+                if (oldFocusOwner != null) {
+                    oldFocusOwner.requestFocus();
+                }
+            }
+        });
+    }
+
+    /**
+     * Returns a save chooser configured for PNG output. A fresh chooser is used
+     * (and cached separately from the regular save chooser) so the PNG file
+     * filter does not interfere with the view's native save chooser.
+     */
+    protected URIChooser getPNGChooser(View view) {
+        URIChooser chsr = (URIChooser) (view.getComponent()).getClientProperty("savePNGChooser");
+        if (chsr == null) {
+            org.jhotdraw.gui.JFileURIChooser fc = new org.jhotdraw.gui.JFileURIChooser();
+            fc.setDialogType(JFileChooser.SAVE_DIALOG);
+            fc.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
+                    "Portable Network Graphics (PNG)", "png"));
+            chsr = fc;
+            view.getComponent().putClientProperty("savePNGChooser", chsr);
+        }
+        return chsr;
+    }
+
+    /**
+     * Ensures that the given URI's path ends with the {@code .png} extension.
+     * <p>
+     * This is the core domain rule for PNG export: a user may type a filename
+     * without an extension, or with a different-case extension; the export must
+     * always produce a file whose name ends in {@code .png}. The method is pure
+     * (no I/O, no Swing) and package-visible so it can be unit tested in
+     * isolation.
+     *
+     * @param rawUri the URI selected by the user; must not be null
+     * @return a URI whose path ends with {@code .png}; the same URI is returned
+     * unchanged if it already ends with {@code .png} (case-insensitive)
+     * @throws NullPointerException if {@code rawUri} is null
+     */
+    static URI ensurePngExtension(final URI rawUri) {
+        // Invariant: this method must never be handed a null URI.
+        assert rawUri != null : "rawUri must not be null";
+        if (rawUri.getPath() == null) {
+            return rawUri;
+        }
+        if (rawUri.getPath().toLowerCase().endsWith(".png")) {
+            return rawUri;
+        }
+        return new java.io.File(rawUri.getPath() + ".png").toURI();
+    }
+
+    protected void exportViewToPNG(final View v, final URI rawUri) {
+        // Ensure the target path ends with .png.
+        final URI uri = ensurePngExtension(rawUri);
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                v.exportToPNG(uri);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
                     doIt(v);
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(AbstractSaveUnsavedChangesAction.class.getName()).log(Level.SEVERE, null, ex);

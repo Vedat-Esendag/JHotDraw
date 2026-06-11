@@ -128,6 +128,22 @@ public class SVGView extends AbstractView {
     }
 
     /**
+     * This view can render itself as a PNG raster image.
+     */
+    @Override
+    public boolean canExportToPNG() {
+        return true;
+    }
+
+    /**
+     * Exports the drawing to the specified uri as a PNG image.
+     */
+    @Override
+    public void exportToPNG(URI uri) throws IOException {
+        new org.jhotdraw.draw.io.ImageOutputFormat().write(new File(uri), svgPanel.getDrawing());
+    }
+
+    /**
      * Reads the view from the specified uri.
      */
     @SuppressWarnings("unchecked")
