@@ -41,8 +41,8 @@ public abstract class AbstractSelectedAction
         extends AbstractAction implements Disposable {
 
     private static final long serialVersionUID = 1L;
-    private DrawingEditor editor;
-    transient private DrawingView activeView;
+    private transient DrawingEditor editor;
+    private transient DrawingView activeView;
 
     private class EventHandler implements PropertyChangeListener, FigureSelectionListener, Serializable {
 
@@ -50,7 +50,7 @@ public abstract class AbstractSelectedAction
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if ((evt.getPropertyName() == null && DrawingEditor.ACTIVE_VIEW_PROPERTY == null) || (evt.getPropertyName() != null && evt.getPropertyName().equals(DrawingEditor.ACTIVE_VIEW_PROPERTY))) {
+            if (evt.getPropertyName() != null && evt.getPropertyName().equals(DrawingEditor.ACTIVE_VIEW_PROPERTY)) {
                 if (activeView != null) {
                     activeView.removeFigureSelectionListener(this);
                     activeView.removePropertyChangeListener(this);
@@ -75,16 +75,15 @@ public abstract class AbstractSelectedAction
         public void selectionChanged(FigureSelectionEvent evt) {
             updateEnabledState();
         }
-    };
+    }
     private EventHandler eventHandler = new EventHandler();
 
     /**
      * Creates an action which acts on the selected figures on the current view
      * of the specified editor.
      */
-    public AbstractSelectedAction(DrawingEditor editor) {
+    protected AbstractSelectedAction(DrawingEditor editor) {
         setEditor(editor);
-        //updateEnabledState();
     }
 
     /**
@@ -146,7 +145,7 @@ public abstract class AbstractSelectedAction
     public void setUpdateEnabledState(boolean newValue) {
         // Note: eventHandler != null yields true, if we are currently updating
         // the enabled state.
-        if (eventHandler != null != newValue) {
+        if ((eventHandler == null) == newValue) {
             if (newValue) {
                 eventHandler = new EventHandler();
                 registerEventHandler();
