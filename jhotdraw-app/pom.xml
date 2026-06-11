@@ -24,10 +24,15 @@
             <artifactId>jhotdraw-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Unit testing (version managed in parent pom dependencyManagement) -->
+        <!-- Unit testing (versions managed in parent pom dependencyManagement) -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
