@@ -33,11 +33,6 @@ public class QuadTreeDrawing extends AbstractDrawing {
     private boolean needsSorting = false;
 
     @Override
-    public int indexOf(Figure figure) {
-        return children.indexOf(figure);
-    }
-
-    @Override
     public void basicAdd(int index, Figure figure) {
         super.basicAdd(index, figure);
         quadTree.add(figure, figure.getDrawingArea());
@@ -102,11 +97,6 @@ public class QuadTreeDrawing extends AbstractDrawing {
 
     public java.util.List<Figure> getChildren(Rectangle2D.Double bounds) {
         return new LinkedList<>(quadTree.findInside(bounds));
-    }
-
-    @Override
-    public java.util.List<Figure> getChildren() {
-        return Collections.unmodifiableList(children);
     }
 
     @Override
@@ -266,17 +256,12 @@ public class QuadTreeDrawing extends AbstractDrawing {
         }
     }
 
-    @Override
-    public boolean contains(Figure f) {
-        return children.contains(f);
-    }
-
     /**
      * Ensures that the children are sorted in z-order sequence.
      */
     private void ensureSorted() {
         if (needsSorting) {
-            Collections.sort(children, FigureLayerComparator.INSTANCE);
+            children.sort(FigureLayerComparator.INSTANCE);
             needsSorting = false;
         }
     }
