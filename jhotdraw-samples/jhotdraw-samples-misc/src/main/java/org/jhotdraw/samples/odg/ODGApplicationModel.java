@@ -94,6 +94,8 @@ public class ODGApplicationModel extends DefaultApplicationModel {
         a.add(new SplitAction(editor));
         a.add(null); // separator
         a.add(new BringToFrontAction(editor));
+        a.add(new BringForwardAction(editor));
+        a.add(new SendBackwardAction(editor));
         a.add(new SendToBackAction(editor));
         return a;
     }

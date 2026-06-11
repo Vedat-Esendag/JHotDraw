@@ -256,6 +256,38 @@ public class QuadTreeDrawing extends AbstractDrawing {
         }
     }
 
+    @Override
+    public void bringForward(Figure figure) {
+        int index = children.indexOf(figure);
+        if (index != -1 && index < children.size() - 1) {
+            children.remove(index);
+            children.add(index + 1, figure);
+
+            assert children.indexOf(figure) == index + 1
+                    : "bringForward violated: expected index " + (index + 1)
+                    + " but got " + children.indexOf(figure);
+
+            needsSorting = true;
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
+
+    @Override
+    public void sendBackward(Figure figure) {
+        int index = children.indexOf(figure);
+        if (index > 0) {
+            children.remove(index);
+            children.add(index - 1, figure);
+
+            assert children.indexOf(figure) == index - 1
+                    : "sendBackward violated: expected index " + (index - 1)
+                    + " but got " + children.indexOf(figure);
+
+            needsSorting = true;
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
+
     /**
      * Ensures that the children are sorted in z-order sequence.
      */

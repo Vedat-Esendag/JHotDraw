@@ -310,6 +310,10 @@ public interface Drawing extends CompositeFigure, Serializable, DOMStorable {
      */
     void bringToFront(Figure figure);
 
+    void bringForward(Figure figure);
+
+    void sendBackward(Figure figure);
+
     /**
      * Returns a copy of the provided collection which is sorted
      * in z order from back to front.

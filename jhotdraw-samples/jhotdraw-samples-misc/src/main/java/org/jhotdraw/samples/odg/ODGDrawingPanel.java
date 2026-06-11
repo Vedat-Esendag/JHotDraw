@@ -73,6 +73,8 @@ public class ODGDrawingPanel extends JPanel {
         pb.add(new UngroupAction(editor));
         pb.addSeparator();
         pb.add(new BringToFrontAction(editor));
+        pb.add(new BringForwardAction(editor));
+        pb.add(new SendBackwardAction(editor));
         pb.add(new SendToBackAction(editor));
         pb.addSeparator();
         pb.add(new CutAction());
@@ -148,6 +150,8 @@ public class ODGDrawingPanel extends JPanel {
         a.add(new SplitAction(editor));
         a.add(null); // separator
         a.add(new BringToFrontAction(editor));
+        a.add(new BringForwardAction(editor));
+        a.add(new SendBackwardAction(editor));
         a.add(new SendToBackAction(editor));
         return a;
     }

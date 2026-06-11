@@ -275,6 +275,18 @@ public abstract class AbstractCompositeFigure
             fireAreaInvalidated(figure.getDrawingArea());
         }
     }
+    public void sendBackward(Figure figure) {
+        if (basicRemove(figure) != -1) {
+            basicAdd(0, figure);
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
+    public void bringForward(Figure figure) {
+        if (basicRemove(figure) != -1) {
+            basicAdd(0, figure);
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
 
     /**
      * Brings a figure to the front of the drawing.
