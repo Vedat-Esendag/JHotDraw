@@ -35,10 +35,50 @@
 			<version>6.8.21</version>
 			<scope>test</scope>
 		</dependency>
-	 <dependency>
-	  <groupId>${project.groupId}</groupId>
-	  <artifactId>jhotdraw-actions</artifactId>
-	  <version>${project.version}</version>
-	 </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>4.11.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>jhotdraw-actions</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<!--
+			  This module mixes the project's existing TestNG tests with the new
+			  JUnit 4 tests (e.g. InvertSelectionActionTest). Surefire only
+			  auto-detects a single provider (TestNG wins), which silently skips
+			  the JUnit tests, so both providers are declared explicitly here to
+			  make Surefire run both test frameworks.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.5</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-testng</artifactId>
+						<version>3.2.5</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>3.2.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
 </project>
