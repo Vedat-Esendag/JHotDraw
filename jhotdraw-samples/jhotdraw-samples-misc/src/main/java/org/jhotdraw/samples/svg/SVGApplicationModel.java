@@ -88,6 +88,7 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         AbstractSelectedAction action;
         ActionMap m = view.getActionMap();
         m.put(SelectSameAction.ID, new SelectSameAction(editor));
+        m.put(InvertSelectionAction.ID, new InvertSelectionAction(editor));
         m.put(GroupAction.ID, new GroupAction(editor, new SVGGroupFigure()));
         m.put(UngroupAction.ID, new UngroupAction(editor, new SVGGroupFigure()));
         m.put(CombineAction.ID, new CombineAction(editor));
@@ -117,6 +118,7 @@ public class SVGApplicationModel extends DefaultApplicationModel {
             editor = (v == null) ? null : v.getEditor();
         }
         m.put(SelectSameAction.ID, new SelectSameAction(editor));
+        m.put(InvertSelectionAction.ID, new InvertSelectionAction(editor));
         m.put(GroupAction.ID, new GroupAction(editor, new SVGGroupFigure()));
         m.put(UngroupAction.ID, new UngroupAction(editor, new SVGGroupFigure()));
         m.put(CombineAction.ID, new CombineAction(editor));
@@ -137,6 +139,7 @@ public class SVGApplicationModel extends DefaultApplicationModel {
                 ActionMap am = app.getActionMap(v);
                 super.addSelectionItems(m, app, v);
                 m.add(am.get(SelectSameAction.ID));
+                m.add(am.get(InvertSelectionAction.ID));
             }
 
             @Override
