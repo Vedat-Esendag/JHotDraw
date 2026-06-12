@@ -46,7 +46,7 @@ public abstract class AbstractCompositeFigure
      * A Layouter determines how the children of the CompositeFigure
      * are laid out graphically.
      */
-    protected Layouter layouter;
+    protected transient Layouter layouter;
     /**
      * The children that this figure is composed of
      *
@@ -117,7 +117,7 @@ public abstract class AbstractCompositeFigure
         }
     }
 
-    public AbstractCompositeFigure() {
+    protected AbstractCompositeFigure() {
         eventHandler = createEventHandler();
     }
 
@@ -275,6 +275,18 @@ public abstract class AbstractCompositeFigure
             fireAreaInvalidated(figure.getDrawingArea());
         }
     }
+    public void sendBackward(Figure figure) {
+        if (basicRemove(figure) != -1) {
+            basicAdd(0, figure);
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
+    public void bringForward(Figure figure) {
+        if (basicRemove(figure) != -1) {
+            basicAdd(0, figure);
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
 
     /**
      * Brings a figure to the front of the drawing.
@@ -297,7 +309,6 @@ public abstract class AbstractCompositeFigure
             f.transform(tx);
         }
         invalidate();
-        //invalidate();
     }
 
     @Override
@@ -315,7 +326,7 @@ public abstract class AbstractCompositeFigure
         if (!Double.isNaN(sx) && !Double.isNaN(sy)
                 && !Double.isInfinite(sx) && !Double.isInfinite(sy)
                 && (sx != 1d || sy != 1d)
-                && !(sx < 0.0001) && !(sy < 0.0001)) {
+                && (sx >= 0.0001) && (sy >= 0.0001)) {
             transform(tx);
             tx.setToIdentity();
             tx.scale(sx, sy);
@@ -331,7 +342,7 @@ public abstract class AbstractCompositeFigure
      * Z-order front to back over the children.
      */
     public java.util.List<Figure> getChildrenFrontToBack() {
-        return children.size() == 0 ? new LinkedList<>() : new ReversedList<>(getChildren());
+        return children.isEmpty() ? new LinkedList<>() : new ReversedList<>(getChildren());
     }
 
     @Override
@@ -382,9 +393,7 @@ public abstract class AbstractCompositeFigure
                 try {
                     p = (Point2D.Double) get(TRANSFORM).inverseTransform(p, new Point2D.Double());
                 } catch (NoninvertibleTransformException ex) {
-                    InternalError error = new InternalError(ex.getMessage());
-                    error.initCause(ex);
-                    throw error;
+                    throw new InternalError(ex.getMessage(), ex);
                 }
             }
             for (Figure child : getChildren()) {
@@ -399,7 +408,7 @@ public abstract class AbstractCompositeFigure
     @Override
     public Figure findFigureInside(Point2D.Double p) {
         if (getDrawingArea().contains(p)) {
-            Figure found = null;
+            Figure found;
             for (Figure child : getChildrenFrontToBack()) {
                 if (child.isVisible()) {
                     found = child.findFigureInside(p);
@@ -414,7 +423,6 @@ public abstract class AbstractCompositeFigure
 
     public Figure findChild(Point2D.Double p) {
         if (getBounds().contains(p)) {
-            Figure found = null;
             for (Figure child : getChildrenFrontToBack()) {
                 if (child.isVisible() && child.contains(p)) {
                     return child;

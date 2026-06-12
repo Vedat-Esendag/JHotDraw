@@ -39,6 +39,7 @@ import org.jhotdraw.samples.svg.figures.SVGTextAreaFigure;
 import org.jhotdraw.samples.svg.figures.SVGTextFigure;
 import org.jhotdraw.util.*;
 
+
 /**
  * DrawToolsPane.
  *
@@ -187,6 +188,10 @@ public class ToolsToolBar extends AbstractToolBar {
         disposables.add(a);
         list.add(null); // separator
         list.add(a = new BringToFrontAction(editor));
+        disposables.add(a);
+        list.add(a = new BringForwardAction(editor));
+        disposables.add(a);
+        list.add(a = new SendBackwardAction(editor));
         disposables.add(a);
         list.add(a = new SendToBackAction(editor));
         disposables.add(a);

@@ -33,11 +33,6 @@ public class QuadTreeDrawing extends AbstractDrawing {
     private boolean needsSorting = false;
 
     @Override
-    public int indexOf(Figure figure) {
-        return children.indexOf(figure);
-    }
-
-    @Override
     public void basicAdd(int index, Figure figure) {
         super.basicAdd(index, figure);
         quadTree.add(figure, figure.getDrawingArea());
@@ -102,11 +97,6 @@ public class QuadTreeDrawing extends AbstractDrawing {
 
     public java.util.List<Figure> getChildren(Rectangle2D.Double bounds) {
         return new LinkedList<>(quadTree.findInside(bounds));
-    }
-
-    @Override
-    public java.util.List<Figure> getChildren() {
-        return Collections.unmodifiableList(children);
     }
 
     @Override
@@ -267,8 +257,35 @@ public class QuadTreeDrawing extends AbstractDrawing {
     }
 
     @Override
-    public boolean contains(Figure f) {
-        return children.contains(f);
+    public void bringForward(Figure figure) {
+        int index = children.indexOf(figure);
+        if (index != -1 && index < children.size() - 1) {
+            children.remove(index);
+            children.add(index + 1, figure);
+
+            assert children.indexOf(figure) == index + 1
+                    : "bringForward violated: expected index " + (index + 1)
+                    + " but got " + children.indexOf(figure);
+
+            needsSorting = true;
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
+    }
+
+    @Override
+    public void sendBackward(Figure figure) {
+        int index = children.indexOf(figure);
+        if (index > 0) {
+            children.remove(index);
+            children.add(index - 1, figure);
+
+            assert children.indexOf(figure) == index - 1
+                    : "sendBackward violated: expected index " + (index - 1)
+                    + " but got " + children.indexOf(figure);
+
+            needsSorting = true;
+            fireAreaInvalidated(figure.getDrawingArea());
+        }
     }
 
     /**
@@ -276,7 +293,7 @@ public class QuadTreeDrawing extends AbstractDrawing {
      */
     private void ensureSorted() {
         if (needsSorting) {
-            Collections.sort(children, FigureLayerComparator.INSTANCE);
+            children.sort(FigureLayerComparator.INSTANCE);
             needsSorting = false;
         }
     }

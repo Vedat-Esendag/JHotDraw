@@ -1,0 +1,283 @@
+{
+  "className": "org.jhotdraw.draw.CanvasOrderBDDTest",
+  "name": "Canvas Order BDD",
+  "scenarios": [
+    {
+      "className": "org.jhotdraw.draw.CanvasOrderBDDTest",
+      "testMethodName": "artist_can_bring_a_figure_forward",
+      "description": "artist can bring a figure forward",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a canvas with three overlapping figures",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a canvas with three overlapping figures"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 426399500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "brings the bottom figure forward",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "brings the bottom figure forward"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 676300,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "should appear one position higher in the stack",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "should appear one position higher in the stack"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 157778500,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 614742700
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 614742700
+    },
+    {
+      "className": "org.jhotdraw.draw.CanvasOrderBDDTest",
+      "testMethodName": "send_backward_has_no_effect_at_the_back",
+      "description": "send backward has no effect at the back",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a canvas with three overlapping figures",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a canvas with three overlapping figures"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2803200,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "sends the backmost figure backward",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "sends the backmost figure backward"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 348000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the order should remain unchanged",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the order should remain unchanged"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 350200,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 4499000
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 4499000
+    },
+    {
+      "className": "org.jhotdraw.draw.CanvasOrderBDDTest",
+      "testMethodName": "artist_can_send_a_figure_backward",
+      "description": "artist can send a figure backward",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a canvas with three overlapping figures",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a canvas with three overlapping figures"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2639100,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "sends the top figure backward",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "sends the top figure backward"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 514000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "should appear one position lower in the stack",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "should appear one position lower in the stack"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 582100,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 4626400
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 4626400
+    },
+    {
+      "className": "org.jhotdraw.draw.CanvasOrderBDDTest",
+      "testMethodName": "bring_forward_has_no_effect_at_the_front",
+      "description": "bring forward has no effect at the front",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a canvas with three overlapping figures",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a canvas with three overlapping figures"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1779800,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "brings the frontmost figure forward",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "brings the frontmost figure forward"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 407800,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the order should remain unchanged",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the order should remain unchanged"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 432000,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 3555100
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 3555100
+    }
+  ],
+  "tagMap": {}
+}

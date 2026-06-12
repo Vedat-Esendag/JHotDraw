@@ -30,14 +30,14 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
     private static final long serialVersionUID = 1L;
     private static final Object LOCK = new JPanel().getTreeLock();
     private transient FontRenderContext fontRenderContext;
-    private LinkedList<InputFormat> inputFormats = new LinkedList<>();
-    private LinkedList<OutputFormat> outputFormats = new LinkedList<>();
+    private transient LinkedList<InputFormat> inputFormats = new LinkedList<>();
+    private transient LinkedList<OutputFormat> outputFormats = new LinkedList<>();
     private static boolean debugMode = false;
 
     /**
      * Creates a new instance.
      */
-    public AbstractDrawing() {
+    protected AbstractDrawing() {
     }
 
     @Override
@@ -88,8 +88,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
     public void read(DOMInput in) throws IOException {
         in.openElement("figures");
         for (int i = 0; i < in.getElementCount(); i++) {
-            Figure f;
-            add(f = (Figure) in.readObject(i));
+            add((Figure) in.readObject(i));
         }
         in.closeElement();
     }
@@ -152,23 +151,6 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
         return this;
     }
 
-    /*@Override
-    public Rectangle2D.Double getDrawingArea() {
-        Rectangle2D.Double drawingArea;
-        Dimension2DDouble canvasSize = getCanvasSize();
-        if (canvasSize != null) {
-            drawingArea = new Rectangle2D.Double(
-                    0d, 0d,
-                    canvasSize.width, canvasSize.height);
-        } else {
-            drawingArea = super.getDrawingArea();
-            drawingArea.add(0d, 0d);
-            /*drawingArea = new Rectangle2D.Double(
-                    0d, 0d,
-                    canvasSize.width, canvasSize.height);* /
-        }
-        return drawingArea;
-    }*/
     @Override
     @SuppressWarnings("unchecked")
     public AbstractDrawing clone() {

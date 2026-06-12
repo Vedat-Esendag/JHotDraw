@@ -1,5 +1,5 @@
 /*
- * @(#)SendToBackAction.java
+ * @(#)SendBackwardAction.java
  *
  * Copyright (c) 2003-2008 The authors and contributors of JHotDraw.
  * You may not use, copy or modify this file, except in compliance with the
@@ -14,20 +14,20 @@ import org.jhotdraw.draw.*;
 import org.jhotdraw.util.ResourceBundleUtil;
 
 /**
- * SendToBackAction.
+ * ToFrontAction.
  *
  * @author Werner Randelshofer
  * @version $Id$
  */
-public class SendToBackAction extends AbstractSelectedAction {
+public class SendBackwardAction extends AbstractSelectedAction {
 
     private static final long serialVersionUID = 1L;
-    public static final String ID = "edit.sendToBack";
+    public static final String ID = "edit.sendBackward";
 
     /**
      * Creates a new instance.
      */
-    public SendToBackAction(DrawingEditor editor) {
+    public SendBackwardAction(DrawingEditor editor) {
         super(editor);
         ResourceBundleUtil labels
                 = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
@@ -39,7 +39,7 @@ public class SendToBackAction extends AbstractSelectedAction {
     public void actionPerformed(java.awt.event.ActionEvent e) {
         final DrawingView view = getView();
         final LinkedList<Figure> figures = new LinkedList<>(view.getSelectedFigures());
-        sendToBack(view, figures);
+        sendBackward(view, figures);
         fireUndoableEditHappened(new AbstractUndoableEdit() {
             private static final long serialVersionUID = 1L;
 
@@ -53,23 +53,21 @@ public class SendToBackAction extends AbstractSelectedAction {
             @Override
             public void redo() throws CannotRedoException {
                 super.redo();
-                SendToBackAction.sendToBack(view, figures);
+                SendBackwardAction.sendBackward(view, figures);
             }
 
             @Override
             public void undo() throws CannotUndoException {
                 super.undo();
-                BringToFrontAction.bringToFront(view, figures);
+                BringForwardAction.bringForward(view, figures);
             }
         });
     }
 
-    public static void sendToBack(DrawingView view, Collection<Figure> figures) {
+    public static void sendBackward(DrawingView view, Collection<Figure> figures) {
         Drawing drawing = view.getDrawing();
-        List<Figure> sortedFigures = drawing.sort(figures);
-        Collections.reverse(sortedFigures);
-        for (Figure figure : sortedFigures) {
-            drawing.sendToBack(figure);
+        for (Figure figure : drawing.sort(figures)) {
+            drawing.sendBackward(figure);
         }
     }
 }
