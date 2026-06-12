@@ -213,16 +213,36 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         final HashMap<FileFilter, OutputFormat> fileFilterOutputFormatMap
                 = new HashMap<FileFilter, OutputFormat>();
         c.putClientProperty(OUTPUT_FORMAT_MAP_CLIENT_PROPERTY, fileFilterOutputFormatMap);
+
         if (v == null) {
             v = new SVGView();
         }
+
+        // Ensure the View's drawing supports PNG format explicitly
         Drawing d = ((SVGView) v).getDrawing();
-        for (OutputFormat format : d.getOutputFormats()) {
-            javax.swing.filechooser.FileFilter ff = format.getFileFilter();
-            fileFilterOutputFormatMap.put(ff, format);
-            c.addChoosableFileFilter(ff);
-            break; // only add the first uri filter
+        if (d != null) {
+            // Safe check: If PNG isn't registered yet, we add it to the backend drawing here
+            boolean hasPng = false;
+            for (OutputFormat format : d.getOutputFormats()) {
+                if (format.getFileFilter().getDescription().toUpperCase().contains("PNG")) {
+                    hasPng = true;
+                    break;
+                }
+            }
+            if (!hasPng) {
+                d.addOutputFormat(new org.jhotdraw.draw.io.ImageOutputFormat());
+            }
+
+            // Loop through all formats and add them to the dropdown chooser
+            for (OutputFormat format : d.getOutputFormats()) {
+                javax.swing.filechooser.FileFilter ff = format.getFileFilter();
+                fileFilterOutputFormatMap.put(ff, format);
+                c.addChoosableFileFilter(ff);
+
+                // REMOVED THE break; STATEMENT HERE so it adds both SVG and PNG!
+            }
         }
+
         return c;
     }
 

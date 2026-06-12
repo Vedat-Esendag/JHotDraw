@@ -362,6 +362,33 @@ public interface View extends Disposable {
     public void write(URI uri, URIChooser chooser) throws IOException;
 
     /**
+     * Exports the view to the specified URI as a PNG raster image.
+     * <p>
+     * This is used by the "Save as PNG" option offered when the user closes a
+     * view with unsaved changes. Unlike {@link #write}, this method always
+     * produces a PNG bitmap regardless of the view's native document format.
+     * <p>
+     * By convention this method is never invoked on the AWT Event Dispatcher Thread.
+     * <p>
+     * The default implementation throws {@code UnsupportedOperationException}.
+     * Views that can render themselves as a raster image should override it.
+     *
+     * @param uri The location where to write the PNG image.
+     */
+    public default void exportToPNG(URI uri) throws IOException {
+        throw new UnsupportedOperationException("This view does not support PNG export");
+    }
+
+    /**
+     * Returns true if this view supports exporting itself to a PNG image via
+     * {@link #exportToPNG}. Used to decide whether to offer a "Save as PNG"
+     * option in the unsaved-changes dialog. Defaults to {@code false}.
+     */
+    public default boolean canExportToPNG() {
+        return false;
+    }
+
+    /**
      * Reads the view from the specified URI.
      * <p>
      * By convention this method is never invoked on the AWT Event Dispatcher Thread.
